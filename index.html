@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DriveEase — Sewa Kendaraan Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0D0F1A; --ink2: #1E2235; --ink3: #2E3350;
+  --slate: #6B7290; --mist: #9EA6C0; --fog: #C8CCDB;
+  --cloud: #EEF0F7; --snow: #F7F8FC; --white: #FFFFFF;
+  --amber: #D4872A; --amber-light: #F5A93E;
+  --amber-pale: #FEF6E8; --amber-glow: rgba(212,135,42,0.15);
+  --teal: #0A9E8A; --teal-pale: #E6F7F5;
+  --crimson: #D63B3B; --crimson-pale: #FDEAEA;
+  --sky: #2B6CB8; --sky-pale: #EBF2FC;
+  --r: 16px; --r-sm: 10px; --r-lg: 24px;
+  --shadow-sm: 0 2px 8px rgba(13,15,26,0.08);
+  --shadow: 0 8px 30px rgba(13,15,26,0.1);
+  --shadow-lg: 0 20px 60px rgba(13,15,26,0.14);
+  --shadow-amber: 0 8px 30px rgba(212,135,42,0.3);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Instrument Sans', sans-serif; background: var(--white); color: var(--ink); overflow-x: hidden; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--snow); }
+::-webkit-scrollbar-thumb { background: var(--fog); border-radius: 3px; }
+
+.page { display: none; min-height: 100vh; }
+.page.active { display: block; animation: pgIn 0.35s ease; }
+@keyframes pgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* NAV */
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(255,255,255,0.93); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(200,204,219,0.5);
+  padding: 0 48px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--ink); cursor: pointer; }
+.nav-logo span { color: var(--amber); }
+.nav-logo em { font-style: normal; font-size: 9px; font-weight: 600; letter-spacing: 2px; color: var(--mist); display: block; margin-top: -5px; font-family: 'Instrument Sans', sans-serif; text-transform: uppercase; }
+.nav-links { display: flex; align-items: center; gap: 30px; }
+.nav-link { font-size: 14px; font-weight: 500; color: var(--slate); cursor: pointer; transition: color .2s; }
+.nav-link:hover, .nav-link.active { color: var(--amber); font-weight: 600; }
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.notif-badge { width: 20px; height: 20px; border-radius: 50%; background: var(--crimson); color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.user-chip { display: flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; background: var(--snow); border: 1.5px solid var(--cloud); border-radius: 50px; cursor: pointer; transition: border-color .2s; }
+.user-chip:hover { border-color: var(--amber); }
+.uc-av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--amber), #8B4A0D); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+.uc-name { font-size: 13px; font-weight: 600; }
+
+/* BTNS */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 22px; border: none; cursor: pointer; border-radius: 50px; font-family: inherit; font-size: 13px; font-weight: 600; transition: all .2s; white-space: nowrap; }
+.btn-amber { background: var(--amber); color: #fff; box-shadow: 0 4px 14px rgba(212,135,42,.35); }
+.btn-amber:hover { background: var(--amber-light); transform: translateY(-1px); box-shadow: var(--shadow-amber); }
+.btn-outline { background: transparent; color: var(--ink); border: 1.5px solid var(--fog); }
+.btn-outline:hover { border-color: var(--amber); color: var(--amber); }
+.btn-lg { padding: 14px 32px; font-size: 15px; }
+
+/* HERO */
+.hero {
+  padding-top: 64px; min-height: 100vh; background: var(--ink);
+  position: relative; overflow: hidden; display: flex; flex-direction: column;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 70% 30%, rgba(212,135,42,.18) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(10,158,138,.08) 0%, transparent 50%),
+    linear-gradient(160deg, #0D0F1A 0%, #141829 60%, #0D1520 100%);
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+.hero-content { position: relative; z-index: 2; padding: 80px 48px 48px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background: rgba(212,135,42,.12); border: 1px solid rgba(212,135,42,.3); border-radius: 50px; font-size: 11px; font-weight: 700; color: var(--amber-light); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 28px; width: fit-content; animation: fu .7s ease both; }
+.hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--amber-light); animation: bk 2s infinite; }
+@keyframes bk { 0%,100%{opacity:1} 50%{opacity:.3} }
+.hero-title { font-family: 'Syne', sans-serif; font-size: clamp(42px,6vw,78px); font-weight: 800; line-height: 1.0; color: #fff; margin-bottom: 24px; letter-spacing: -2px; animation: fu .7s .1s ease both; }
+.hero-title .line-amber { color: var(--amber-light); display: block; }
+.hero-desc { font-size: 17px; line-height: 1.75; color: rgba(255,255,255,.55); max-width: 520px; margin-bottom: 48px; animation: fu .7s .2s ease both; }
+@keyframes fu { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+
+/* SEARCH */
+.search-panel { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: var(--r-lg); backdrop-filter: blur(20px); padding: 28px 32px; max-width: 780px; animation: fu .7s .3s ease both; }
+.sp-title { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.35); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 18px; }
+.sp-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end; }
+.sp-field { display: flex; flex-direction: column; gap: 6px; }
+.sp-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,.45); text-transform: uppercase; letter-spacing: 1px; }
+.sp-input { padding: 12px 16px; background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.12); border-radius: var(--r-sm); font-family: inherit; font-size: 14px; color: #fff; outline: none; transition: border-color .2s; appearance: none; }
+.sp-input::placeholder { color: rgba(255,255,255,.3); }
+.sp-input:focus { border-color: rgba(212,135,42,.6); }
+.sp-input option { background: var(--ink2); color: #fff; }
+.btn-search { padding: 13px 28px; background: var(--amber); color: #fff; border: none; border-radius: var(--r-sm); font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; box-shadow: var(--shadow-amber); }
+.btn-search:hover { background: var(--amber-light); transform: translateY(-1px); }
+
+/* HERO STATS */
+.hero-stats { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(4,1fr); border-top: 1px solid rgba(255,255,255,.07); animation: fu .7s .4s ease both; }
+.hs { padding: 22px 36px; border-right: 1px solid rgba(255,255,255,.07); display: flex; align-items: center; gap: 14px; }
+.hs:last-child { border: none; }
+.hs-icon { font-size: 22px; }
+.hs-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--amber-light); line-height: 1; }
+.hs-label { font-size: 11px; color: rgba(255,255,255,.38); margin-top: 3px; font-weight: 500; }
+
+/* SECTIONS */
+.section { padding: 80px 48px; }
+.section-alt { background: var(--snow); }
+.sec-tag { font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--amber); margin-bottom: 10px; }
+.sec-title { font-family: 'Syne', sans-serif; font-size: clamp(28px,4vw,44px); font-weight: 800; line-height: 1.1; letter-spacing: -1px; margin-bottom: 16px; }
+.sec-desc { font-size: 16px; line-height: 1.75; color: var(--slate); max-width: 520px; }
+.sec-hd { margin-bottom: 48px; }
+.sec-hd.cen { text-align: center; }
+.sec-hd.cen .sec-desc { margin: 0 auto; }
+
+/* HOW */
+.how-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; }
+.how-card { text-align: center; padding: 28px 20px; }
+.how-num { width: 48px; height: 48px; border-radius: 50%; background: var(--amber); color: #fff; font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 6px 20px rgba(212,135,42,.35); }
+.how-icon { font-size: 32px; margin-bottom: 10px; }
+.how-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.how-desc { font-size: 13px; color: var(--slate); line-height: 1.65; }
+
+/* CAR CARDS */
+.filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 28px; }
+.ftab { padding: 8px 20px; border-radius: 50px; border: 1.5px solid var(--cloud); font-size: 13px; font-weight: 600; color: var(--slate); cursor: pointer; transition: all .2s; background: var(--white); }
+.ftab:hover { border-color: var(--amber); color: var(--amber); }
+.ftab.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+.cars-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.car-card { background: var(--white); border: 1.5px solid var(--cloud); border-radius: var(--r); overflow: hidden; cursor: pointer; transition: all .3s cubic-bezier(.16,1,.3,1); position: relative; }
+.car-card:hover { border-color: var(--amber); box-shadow: var(--shadow-lg); transform: translateY(-6px); }
+.car-img-wrap { height: 160px; background: linear-gradient(135deg, var(--snow), var(--cloud)); display: flex; align-items: center; justify-content: center; font-size: 64px; position: relative; overflow: hidden; }
+.car-img-wrap::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(to top, rgba(255,255,255,.5), transparent); }
+.car-badges { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; }
+.ctag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: .5px; }
+.ctag.pop { background: var(--amber); color: #fff; }
+.ctag.new { background: var(--teal); color: #fff; }
+.ctag.promo { background: var(--crimson); color: #fff; }
+.car-fav { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.9); display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; box-shadow: var(--shadow-sm); transition: transform .2s; }
+.car-fav:hover { transform: scale(1.15); }
+.car-body { padding: 18px; }
+.car-cat { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--mist); margin-bottom: 4px; }
+.car-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 12px; }
+.car-specs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.spec-pill { display: flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: var(--slate); background: var(--snow); padding: 4px 10px; border-radius: 20px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.chip::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.chip.av { background: var(--teal-pale); color: var(--teal); }
+.chip.av::before { background: var(--teal); }
+.chip.bk { background: var(--crimson-pale); color: var(--crimson); }
+.chip.bk::before { background: var(--crimson); }
+.car-foot { display: flex; align-items: flex-end; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--cloud); margin-top: 4px; }
+.car-price-lbl { font-size: 10px; color: var(--mist); margin-bottom: 2px; }
+.car-price { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--ink); line-height: 1; }
+.car-price span { font-size: 12px; font-weight: 500; color: var(--slate); }
+.btn-pick { padding: 9px 20px; background: var(--ink); color: #fff; border: none; border-radius: 50px; font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .2s; }
+.car-card:hover .btn-pick, .btn-pick:hover { background: var(--amber); }
+
+/* PROMO */
+.promo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.promo-card { border-radius: var(--r); overflow: hidden; cursor: pointer; transition: transform .25s; }
+.promo-card:hover { transform: translateY(-4px); }
+.promo-bg { padding: 28px; color: #fff; position: relative; overflow: hidden; min-height: 148px; display: flex; flex-direction: column; justify-content: flex-end; }
+.promo-bg::before { content: ''; position: absolute; inset: 0; background: inherit; filter: brightness(.65); z-index: 0; }
+.promo-bg > * { position: relative; z-index: 1; }
+.p-tag { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; opacity: .7; }
+.p-title { font-family: 'Syne', sans-serif; font-size: 19px; font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+.p-code { font-size: 12px; font-weight: 700; background: rgba(255,255,255,.2); padding: 4px 12px; border-radius: 20px; width: fit-content; }
+
+/* TESTI */
+.testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.testi-card { background: var(--white); border: 1.5px solid var(--cloud); border-radius: var(--r); padding: 28px; transition: all .3s; }
+.testi-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+.stars { color: var(--amber); font-size: 14px; letter-spacing: 2px; margin-bottom: 16px; }
+.testi-text { font-size: 14px; line-height: 1.8; color: var(--slate); margin-bottom: 20px; }
+.testi-auth { display: flex; align-items: center; gap: 12px; }
+.ta-av { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #fff; }
+.ta-name { font-size: 13px; font-weight: 700; }
+.ta-meta { font-size: 11px; color: var(--mist); margin-top: 1px; }
+
+/* ── BOOKING PAGE ── */
+.bk-layout { padding-top: 64px; display: grid; grid-template-columns: 1fr 380px; gap: 32px; padding: 80px 48px; padding-top: 96px; min-height: 100vh; background: var(--snow); }
+.back-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--slate); cursor: pointer; margin-bottom: 24px; transition: color .2s; }
+.back-btn:hover { color: var(--amber); }
+.car-detail-hero { background: var(--white); border-radius: var(--r); border: 1.5px solid var(--cloud); overflow: hidden; margin-bottom: 22px; }
+.cdh-img { height: 240px; background: linear-gradient(135deg, #F0F2F8, #E4E8F5); display: flex; align-items: center; justify-content: center; font-size: 96px; position: relative; }
+.cdh-body { padding: 24px; }
+.cdh-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
+.cdh-sub { font-size: 14px; color: var(--slate); margin-bottom: 20px; }
+.spec-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+.spec-item { background: var(--snow); border-radius: var(--r-sm); padding: 14px; text-align: center; border: 1px solid var(--cloud); }
+.si-icon { font-size: 20px; margin-bottom: 8px; }
+.si-val { font-size: 13px; font-weight: 700; }
+.si-key { font-size: 10px; color: var(--mist); margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
+
+.sec-box { background: var(--white); border-radius: var(--r); border: 1.5px solid var(--cloud); padding: 24px; margin-bottom: 20px; }
+.sb-title { font-size: 15px; font-weight: 700; margin-bottom: 18px; }
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fg { display: flex; flex-direction: column; gap: 6px; }
+.fg.full { grid-column: span 2; }
+.flabel { font-size: 12px; font-weight: 700; color: var(--slate); text-transform: uppercase; letter-spacing: .5px; }
+.finput { padding: 11px 16px; border: 1.5px solid var(--cloud); border-radius: var(--r-sm); font-family: inherit; font-size: 14px; color: var(--ink); outline: none; transition: border-color .2s; background: var(--white); appearance: none; }
+.finput:focus { border-color: var(--amber); }
+.finput::placeholder { color: var(--mist); }
+
+.addon-list { display: flex; flex-direction: column; gap: 10px; }
+.addon-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; border: 1.5px solid var(--cloud); border-radius: var(--r-sm); cursor: pointer; transition: all .2s; }
+.addon-item.sel { border-color: var(--amber); background: var(--amber-pale); }
+.addon-item:hover:not(.sel) { border-color: var(--fog); }
+.ai-left { display: flex; align-items: center; gap: 12px; }
+.ai-icon { font-size: 22px; }
+.ai-name { font-size: 13px; font-weight: 700; }
+.ai-desc { font-size: 11px; color: var(--slate); margin-top: 2px; }
+.ai-price { font-size: 13px; font-weight: 700; color: var(--amber); }
+.ai-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--cloud); transition: all .2s; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; flex-shrink: 0; }
+.addon-item.sel .ai-check { background: var(--amber); border-color: var(--amber); }
+
+/* ORDER BOX */
+.order-box { background: var(--white); border: 1.5px solid var(--cloud); border-radius: var(--r); padding: 24px; position: sticky; top: 84px; box-shadow: var(--shadow); }
+.ob-car { display: flex; align-items: center; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid var(--cloud); margin-bottom: 18px; }
+.ob-img { width: 70px; height: 52px; background: var(--snow); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; border: 1px solid var(--cloud); }
+.ob-name { font-size: 15px; font-weight: 700; }
+.ob-plate { font-size: 11px; color: var(--mist); margin-top: 2px; font-weight: 600; letter-spacing: 1px; }
+.price-rows { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.pr { display: flex; justify-content: space-between; align-items: center; }
+.pr-k { font-size: 13px; color: var(--slate); }
+.pr-v { font-size: 13px; font-weight: 600; }
+.pr-div { height: 1px; background: var(--cloud); margin: 2px 0; }
+.pr-total { display: flex; justify-content: space-between; align-items: baseline; }
+.prt-k { font-size: 14px; font-weight: 700; }
+.prt-v { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--amber); }
+.promo-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.promo-in { flex: 1; padding: 10px 14px; border: 1.5px dashed var(--fog); border-radius: var(--r-sm); font-family: inherit; font-size: 13px; outline: none; color: var(--ink); transition: all .2s; }
+.promo-in:focus { border-color: var(--amber); border-style: solid; }
+.promo-in::placeholder { color: var(--mist); }
+.btn-promo { padding: 10px 16px; background: var(--snow); color: var(--slate); border: 1.5px solid var(--cloud); border-radius: var(--r-sm); font-family: inherit; font-size: 12px; font-weight: 700; cursor: pointer; transition: all .2s; }
+.btn-promo:hover { border-color: var(--amber); color: var(--amber); }
+.pay-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.pay-opt { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--cloud); border-radius: 10px; cursor: pointer; transition: all .2s; }
+.pay-opt.sel { border-color: var(--amber); background: var(--amber-pale); }
+.pay-opt-name { font-size: 13px; font-weight: 600; }
+.pay-opt-sub { font-size: 11px; color: var(--mist); margin-left: auto; }
+.btn-confirm { width: 100%; padding: 16px; background: var(--amber); color: #fff; border: none; border-radius: var(--r-sm); font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; cursor: pointer; transition: all .25s; box-shadow: var(--shadow-amber); letter-spacing: .5px; }
+.btn-confirm:hover { background: var(--amber-light); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(212,135,42,.4); }
+.trust-row { display: flex; justify-content: center; gap: 16px; margin-top: 12px; }
+.tb { font-size: 11px; color: var(--mist); display: flex; align-items: center; gap: 4px; }
+
+/* ── DASHBOARD ── */
+.dash-layout { padding-top: 64px; display: grid; grid-template-columns: 256px 1fr; min-height: 100vh; }
+.dash-side { background: var(--ink); padding: 28px 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; }
+.ds-user { padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.07); margin-bottom: 20px; }
+.ds-av { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,var(--amber),#6B3510); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 12px; }
+.ds-name { font-size: 16px; font-weight: 700; color: #fff; }
+.ds-email { font-size: 12px; color: rgba(255,255,255,.35); margin-top: 2px; }
+.ds-pts { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 5px 12px; background: rgba(212,135,42,.12); border: 1px solid rgba(212,135,42,.25); border-radius: 20px; }
+.dp-v { font-size: 13px; font-weight: 700; color: var(--amber-light); }
+.dp-l { font-size: 11px; color: rgba(255,255,255,.35); }
+.ds-menu { padding: 0 12px; }
+.ds-ml { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.22); padding: 12px 12px 6px; }
+.dmi { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all .2s; margin-bottom: 2px; }
+.dmi:hover { background: rgba(255,255,255,.06); }
+.dmi.active { background: rgba(212,135,42,.15); }
+.dmi-ic { font-size: 15px; width: 22px; text-align: center; }
+.dmi-lb { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.45); transition: color .2s; }
+.dmi.active .dmi-lb { color: var(--amber-light); font-weight: 700; }
+.dmi:hover .dmi-lb { color: rgba(255,255,255,.85); }
+
+.dash-main { background: var(--snow); padding: 32px; overflow-y: auto; }
+.dw-card { background: linear-gradient(120deg, var(--ink2), #1A2540); border-radius: var(--r); padding: 28px 32px; margin-bottom: 24px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; }
+.dw-card::before { content: ''; position: absolute; right: -30px; top: -30px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(212,135,42,.18) 0%, transparent 70%); }
+.dw-greet { font-size: 13px; color: rgba(255,255,255,.38); margin-bottom: 4px; }
+.dw-name { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.dw-tier { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background: rgba(212,135,42,.18); border: 1px solid rgba(212,135,42,.3); border-radius: 20px; color: var(--amber-light); font-size: 11px; font-weight: 700; }
+.dw-stats { display: flex; gap: 28px; margin-top: 20px; }
+.dws-v { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; }
+.dws-l { font-size: 11px; color: rgba(255,255,255,.32); margin-top: 2px; }
+.dws-div { width: 1px; background: rgba(255,255,255,.1); }
+
+.dash-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.dc { background: var(--white); border-radius: var(--r); border: 1.5px solid var(--cloud); padding: 22px; }
+.dc-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+.dc-title a { font-size: 12px; color: var(--amber); cursor: pointer; font-weight: 600; }
+
+.bsc { display: flex; gap: 12px; align-items: center; padding: 12px; border: 1.5px solid var(--cloud); border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: all .2s; }
+.bsc:last-child { margin: 0; }
+.bsc:hover { border-color: var(--amber); background: var(--amber-pale); }
+.bsc-car { width: 50px; height: 38px; background: var(--snow); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.bsc-name { font-size: 13px; font-weight: 700; }
+.bsc-dates { font-size: 11px; color: var(--slate); margin-top: 2px; }
+.bsc-right { margin-left: auto; text-align: right; flex-shrink: 0; }
+.bsc-status { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+.bss-active { background: var(--teal-pale); color: var(--teal); }
+.bss-up { background: var(--sky-pale); color: var(--sky); }
+.bsc-price { font-size: 13px; font-weight: 700; color: var(--ink); margin-top: 5px; }
+
+.pts-bar { height: 8px; background: var(--cloud); border-radius: 4px; margin-bottom: 8px; }
+.pts-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--amber), var(--amber-light)); }
+
+/* TOAST */
+.toast { position: fixed; bottom: 28px; right: 28px; z-index: 9999; background: var(--ink2); color: #fff; padding: 16px 24px; border-radius: var(--r-sm); border-left: 4px solid var(--teal); box-shadow: var(--shadow-lg); font-size: 14px; font-weight: 600; display: none; align-items: center; gap: 10px; animation: sir .3s ease; }
+.toast.show { display: flex; }
+@keyframes sir { from { opacity:0; transform: translateX(30px); } to { opacity:1; transform: translateX(0); } }
+
+/* FOOTER */
+.footer { background: var(--ink); padding: 56px 48px 28px; }
+.ft { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,.07); margin-bottom: 24px; }
+.ft-brand .nav-logo { color: #fff; display: block; margin-bottom: 14px; }
+.ft-desc { font-size: 13px; color: rgba(255,255,255,.32); line-height: 1.8; max-width: 280px; }
+.ft-col-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,.27); margin-bottom: 14px; }
+.ft-link { font-size: 13px; color: rgba(255,255,255,.4); cursor: pointer; margin-bottom: 10px; transition: color .2s; }
+.ft-link:hover { color: var(--amber-light); }
+.fb { display: flex; justify-content: space-between; align-items: center; }
+.ft-copy { font-size: 12px; color: rgba(255,255,255,.22); }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Booking dikonfirmasi! Cek WhatsApp Anda.</div>
+
+<!-- TOPNAV -->
+<nav class="topnav">
+  <div class="nav-logo" onclick="go('page-home')">Drive<span>Ease</span><em>Rent Car Indonesia</em></div>
+  <div class="nav-links">
+    <span class="nav-link active" onclick="go('page-home')">Beranda</span>
+    <span class="nav-link" onclick="go('page-catalog')">Armada</span>
+    <span class="nav-link">Promo</span>
+    <span class="nav-link">Bantuan</span>
+  </div>
+  <div class="nav-right">
+    <div class="notif-badge">3</div>
+    <div class="user-chip" onclick="go('page-dashboard')">
+      <div class="uc-av">AF</div>
+      <span class="uc-name">Ahmad Fauzi</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════ HOME ══════ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge">✦ Platform Sewa Kendaraan Terpercaya #1 Jakarta</div>
+      <h1 class="hero-title">Perjalanan Nyaman<br><span class="line-amber">Dimulai di Sini.</span></h1>
+      <p class="hero-desc">Pilih dari 47+ kendaraan premium. Booking 2 menit. Konfirmasi instan via WhatsApp. Tanpa antri, tanpa ribet.</p>
+      <div class="search-panel">
+        <div class="sp-title">🔍 Cari Kendaraan Tersedia</div>
+        <div class="sp-row">
+          <div class="sp-field">
+            <div class="sp-label">Jenis Kendaraan</div>
+            <select class="sp-input"><option value="">Semua Jenis</option><option>🚗 Economy</option><option>🚙 SUV</option><option>🚐 MPV</option><option>🏎️ Premium</option></select>
+          </div>
+          <div class="sp-field">
+            <div class="sp-label">Tanggal Mulai</div>
+            <input type="date" class="sp-input" value="2025-03-18">
+          </div>
+          <div class="sp-field">
+            <div class="sp-label">Tanggal Selesai</div>
+            <input type="date" class="sp-input" value="2025-03-21">
+          </div>
+          <button class="btn-search" onclick="go('page-catalog')">Cari →</button>
+        </div>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-icon">🚗</div><div><div class="hs-val">47+</div><div class="hs-label">Unit Kendaraan</div></div></div>
+      <div class="hs"><div class="hs-icon">⭐</div><div><div class="hs-val">4.9</div><div class="hs-label">Rating Rata-rata</div></div></div>
+      <div class="hs"><div class="hs-icon">🎉</div><div><div class="hs-val">2.800+</div><div class="hs-label">Pelanggan Puas</div></div></div>
+      <div class="hs"><div class="hs-icon">⚡</div><div><div class="hs-val">&lt; 2 Min</div><div class="hs-label">Proses Booking</div></div></div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="section section-alt">
+    <div class="sec-hd cen"><div class="sec-tag">Cara Kerja</div><h2 class="sec-title">Booking Semudah 4 Langkah</h2></div>
+    <div class="how-grid">
+      <div class="how-card"><div class="how-icon">🔍</div><div class="how-num">1</div><div class="how-title">Pilih Kendaraan</div><p class="how-desc">Telusuri koleksi kami. Filter jenis, kapasitas, dan harga sesuai kebutuhan.</p></div>
+      <div class="how-card"><div class="how-icon">📅</div><div class="how-num">2</div><div class="how-title">Tentukan Jadwal</div><p class="how-desc">Pilih tanggal, durasi, dan layanan tambahan. Ketersediaan real-time.</p></div>
+      <div class="how-card"><div class="how-icon">💳</div><div class="how-num">3</div><div class="how-title">Bayar & Konfirmasi</div><p class="how-desc">Bayar via transfer, QRIS, atau kartu kredit. Konfirmasi otomatis ke WhatsApp.</p></div>
+      <div class="how-card"><div class="how-icon">🗝️</div><div class="how-num">4</div><div class="how-title">Ambil Kendaraan</div><p class="how-desc">Bawa KTP & bukti booking. Tanda tangan digital, langsung berangkat!</p></div>
+    </div>
+  </section>
+
+  <!-- CATALOG PREVIEW -->
+  <section class="section">
+    <div class="sec-hd" style="display:flex;align-items:flex-end;justify-content:space-between;max-width:100%">
+      <div><div class="sec-tag">Armada Kami</div><h2 class="sec-title">Kendaraan Tersedia Hari Ini</h2></div>
+      <button class="btn btn-outline" onclick="go('page-catalog')">Lihat Semua →</button>
+    </div>
+    <div class="filter-tabs">
+      <div class="ftab active">Semua</div><div class="ftab">🚗 Economy</div><div class="ftab">🚙 SUV</div><div class="ftab">🚐 MPV</div><div class="ftab">🏎️ Premium</div>
+    </div>
+    <div class="cars-grid">
+      <div class="car-card" onclick="go('page-booking')">
+        <div class="car-img-wrap">🚗<div class="car-badges"><span class="ctag pop">Terpopuler</span></div><div class="car-fav">🤍</div></div>
+        <div class="car-body">
+          <div class="car-cat">Economy · 5 Penumpang</div>
+          <div class="car-name">Toyota Avanza 1.3 G</div>
+          <div class="car-specs"><span class="spec-pill">⛽ Bensin</span><span class="spec-pill">🔧 Manual</span><span class="spec-pill">❄️ AC</span></div>
+          <div style="margin-bottom:12px"><span class="chip av">Tersedia</span></div>
+          <div class="car-foot"><div><div class="car-price-lbl">Mulai dari</div><div class="car-price">Rp 350rb <span>/ hari</span></div></div><button class="btn-pick">Sewa Sekarang</button></div>
+        </div>
+      </div>
+      <div class="car-card" onclick="go('page-booking')">
+        <div class="car-img-wrap" style="background:linear-gradient(135deg,#E8EEF8,#D4DDEF)">🚙<div class="car-badges"><span class="ctag new">Baru</span></div><div class="car-fav">❤️</div></div>
+        <div class="car-body">
+          <div class="car-cat">SUV · 5 Penumpang</div>
+          <div class="car-name">Honda CR-V Turbo</div>
+          <div class="car-specs"><span class="spec-pill">⛽ Bensin</span><span class="spec-pill">🤖 Matic</span><span class="spec-pill">❄️ AC</span></div>
+          <div style="margin-bottom:12px"><span class="chip av">Tersedia</span></div>
+          <div class="car-foot"><div><div class="car-price-lbl">Mulai dari</div><div class="car-price">Rp 650rb <span>/ hari</span></div></div><button class="btn-pick">Sewa Sekarang</button></div>
+        </div>
+      </div>
+      <div class="car-card" onclick="go('page-booking')">
+        <div class="car-img-wrap" style="background:linear-gradient(135deg,#F5F0E8,#EAE0D0)">🏎️<div class="car-badges"><span class="ctag promo">Promo -15%</span></div><div class="car-fav">🤍</div></div>
+        <div class="car-body">
+          <div class="car-cat">Premium · 7 Penumpang</div>
+          <div class="car-name">Toyota Fortuner VRZ</div>
+          <div class="car-specs"><span class="spec-pill">⛽ Solar</span><span class="spec-pill">🤖 Matic</span><span class="spec-pill">❄️ Dual AC</span></div>
+          <div style="margin-bottom:12px"><span class="chip av">Tersedia</span></div>
+          <div class="car-foot"><div><div class="car-price-lbl">Mulai dari</div><div class="car-price">Rp 807rb <span>/ hari</span></div></div><button class="btn-pick">Sewa Sekarang</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROMO -->
+  <section class="section section-alt">
+    <div class="sec-hd cen"><div class="sec-tag">Penawaran Spesial</div><h2 class="sec-title">Promo & Diskon Eksklusif</h2></div>
+    <div class="promo-grid">
+      <div class="promo-card"><div class="promo-bg" style="background:linear-gradient(135deg,#1A3A6B,#0D2550)"><div class="p-tag">Weekend Deal</div><div class="p-title">Diskon 20%<br>Sewa Sabtu–Minggu</div><div class="p-code">Kode: WEEKEND20</div></div></div>
+      <div class="promo-card"><div class="promo-bg" style="background:linear-gradient(135deg,#8B2500,#C43800)"><div class="p-tag">Member Baru</div><div class="p-title">Gratis 1 Hari<br>Sewa Pertama Anda</div><div class="p-code">Kode: NEWMEMBER</div></div></div>
+      <div class="promo-card"><div class="promo-bg" style="background:linear-gradient(135deg,#0A5C4E,#067A65)"><div class="p-tag">Sewa Lama</div><div class="p-title">Hemat 30%<br>Sewa 7 Hari ke Atas</div><div class="p-code">Kode: WEEKLY30</div></div></div>
+    </div>
+  </section>
+
+  <!-- TESTI -->
+  <section class="section">
+    <div class="sec-hd cen"><div class="sec-tag">Ulasan Pelanggan</div><h2 class="sec-title">Apa Kata Mereka?</h2><p class="sec-desc">Lebih dari 2.800 pelanggan sudah mempercayakan perjalanan mereka kepada DriveEase.</p></div>
+    <div class="testi-grid">
+      <div class="testi-card"><div class="stars">★★★★★</div><p class="testi-text">"Booking-nya gampang banget, langsung ada konfirmasi WhatsApp. Mobil bersih dan terawat. Pasti balik lagi!"</p><div class="testi-auth"><div class="ta-av" style="background:linear-gradient(135deg,#7B5CF5,#3b1fa0)">RA</div><div><div class="ta-name">Rizky Andrianto</div><div class="ta-meta">Jakarta · 12 kali sewa</div></div></div></div>
+      <div class="testi-card"><div class="stars">★★★★★</div><p class="testi-text">"Sering sewa untuk keperluan kantor. Prosesnya profesional, invoice langsung ada, armadanya selalu prima."</p><div class="testi-auth"><div class="ta-av" style="background:linear-gradient(135deg,#D4A843,#8B5E1A)">DP</div><div><div class="ta-name">Dewi Puspita</div><div class="ta-meta">Depok · 28 kali sewa</div></div></div></div>
+      <div class="testi-card"><div class="stars">★★★★★</div><p class="testi-text">"Poin loyaltinya nyata bisa dipake diskon. Sudah dapat cashback 3 kali dari poin. Aplikasinya juga enak."</p><div class="testi-auth"><div class="ta-av" style="background:linear-gradient(135deg,#18A76A,#0d6040)">BH</div><div><div class="ta-name">Bagas Hartono</div><div class="ta-meta">Tangerang · 19 kali sewa</div></div></div></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="ft">
+      <div class="ft-brand"><div class="nav-logo">Drive<span>Ease</span></div><p class="ft-desc">Platform sewa kendaraan digital terpercaya di Indonesia. Armada premium, proses cepat, harga transparan.</p></div>
+      <div><div class="ft-col-title">Layanan</div><div class="ft-link">Sewa Harian</div><div class="ft-link">Sewa Mingguan</div><div class="ft-link">Sewa Bulanan</div><div class="ft-link">Korporat & Event</div></div>
+      <div><div class="ft-col-title">Perusahaan</div><div class="ft-link">Tentang Kami</div><div class="ft-link">Karir</div><div class="ft-link">Blog</div><div class="ft-link">Hubungi Kami</div></div>
+      <div><div class="ft-col-title">Bantuan</div><div class="ft-link">FAQ</div><div class="ft-link">Kebijakan Privasi</div><div class="ft-link">Syarat & Ketentuan</div><div class="ft-link">WhatsApp Support</div></div>
+    </div>
+    <div class="fb"><div class="ft-copy">© 2025 DriveEase · All rights reserved · Jakarta, Indonesia</div><div class="ft-copy">🔒 Secure · 📱 Mobile Friendly · ⚡ Fast Booking</div></div>
+  </footer>
+</div>
+
+<!-- ══════ CATALOG ══════ -->
+<div class="page" id="page-catalog">
+  <div style="padding-top:64px;background:var(--snow);min-height:100vh">
+    <div style="padding:36px 48px">
+      <div class="back-btn" onclick="go('page-home')">← Kembali ke Beranda</div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px">
+        <div><div class="sec-tag">Armada Tersedia</div><h2 class="sec-title" style="margin-bottom:0">Pilih Kendaraan Anda</h2></div>
+        <div style="display:flex;gap:10px;align-items:center"><span style="font-size:13px;color:var(--slate)">Urutkan:</span><select style="padding:8px 14px;border:1.5px solid var(--cloud);border-radius:8px;font-family:inherit;font-size:13px;outline:none"><option>Harga Terendah</option><option>Paling Populer</option></select></div>
+      </div>
+      <div class="filter-tabs">
+        <div class="ftab active">Semua (47)</div><div class="ftab">🚗 Economy (18)</div><div class="ftab">🚙 SUV (12)</div><div class="ftab">🚐 MPV (10)</div><div class="ftab">🏎️ Premium (7)</div>
+      </div>
+      <div class="cars-grid">
+        <div class="car-card" onclick="go('page-booking')"><div class="car-img-wrap">🚗<div class="car-badges"><span class="ctag pop">Terpopuler</span></div></div><div class="car-body"><div class="car-cat">Economy · 5 Penumpang</div><div class="car-name">Toyota Avanza 1.3 G</div><div class="car-specs"><span class="spec-pill">⛽ Bensin</span><span class="spec-pill">🔧 Manual</span><span class="spec-pill">❄️ AC</span></div><div style="margin-bottom:10px"><span class="chip av">Tersedia</span></div><div class="car-foot"><div><div class="car-price-lbl">Mulai dari</div><div class="car-price">Rp 350rb <span>/ hari</span></div></div><button class="btn-pick">Pilih</button></div></div></div>
+        <div class="car-card" onclick="go('page-booking')"><div class="car-img-wrap" style="background:linear-gradient(135deg,#E8EEF8,#D4DDEF)">🚙<div class="car-badges"><span class="ctag new">Baru</span></div></div><div class="car-body"><div class="car-cat">SUV · 5 Penumpang</div><div class="car-name">Honda CR-V Turbo</div><div class="car-specs"><span class="spec-pill">⛽ Bensin</span><span class="spec-pill">🤖 Matic</span><span class="spec-pill">❄️ AC</span></div><div style="margin-bottom:10px"><span class="chip av">Tersedia</span></div><div class="car-foot"><div><div class="car-price-lbl">Mulai dari</div><div class="car-price">Rp 650rb <span>/ hari</span></div></div><button class="btn-pick">Pilih</button></div></div></div>
+        <div class="car-card" onclick="go('page-booking')"><div class="car-img-wrap" style="background:linear-gradient(135deg,#F5F0E8,#EAE0D0)">🏎️<div class="car-badges"><span class="ctag promo">-15%</span></div></div><div class="car-body"><div class="car-cat">Premium · 7 Penumpang</div><div class="car-name">Toyota Fortuner VRZ</div><div class="car-specs"><span class="spec-pill">⛽ Solar</span><span class="spec-pill">🤖 Matic</span><span class="spec-pill">❄️ Dual AC</span></div><div style="margin-bottom:10px"><span class="chip av">Tersedia</span></div><div class="car-foot"><div><div class="car-price-lbl">Mulai dari</div><div class="car-price">Rp 807rb <span>/ hari</span></div></div><button class="btn-pick">Pilih</button></div></div></div>
+        <div class="car-card"><div class="car-img-wrap" style="background:linear-gradient(135deg,#E8F0E8,#D4E4D4)">🚐</div><div class="car-body"><div class="car-cat">MPV · 12 Penumpang</div><div class="car-name">Toyota Hiace Premio</div><div class="car-specs"><span class="spec-pill">⛽ Solar</span><span class="spec-pill">🔧 Manual</span><span class="spec-pill">❄️ Dual AC</span></div><div style="margin-bottom:10px"><span class="chip bk">Disewa s/d 20 Mar</span></div><div class="car-foot"><div><div class="car-price-lbl">Mulai dari</div><div class="car-price">Rp 1.1Jt <span>/ hari</span></div></div><button class="btn-pick" style="background:var(--fog);color:var(--slate);cursor:not-allowed">Penuh</button></div></div></div>
+        <div class="car-card" onclick="go('page-booking')"><div class="car-img-wrap" style="background:linear-gradient(135deg,#F0EAF8,#E0D4EF)">🚗</div><div class="car-body"><div class="car-cat">Economy · 5 Penumpang</div><div class="car-name">Daihatsu Xenia R</div><div class="car-specs"><span class="spec-pill">⛽ Bensin</span><span class="spec-pill">🤖 Matic</span><span class="spec-pill">❄️ AC</span></div><div style="margin-bottom:10px"><span class="chip av">Tersedia</span></div><div class="car-foot"><div><div class="car-price-lbl">Mulai dari</div><div class="car-price">Rp 300rb <span>/ hari</span></div></div><button class="btn-pick">Pilih</button></div></div></div>
+        <div class="car-card" onclick="go('page-booking')"><div class="car-img-wrap" style="background:linear-gradient(135deg,#F8EEE8,#EFD8C8)">🚗</div><div class="car-body"><div class="car-cat">Hatchback · 4 Penumpang</div><div class="car-name">Honda Jazz RS</div><div class="car-specs"><span class="spec-pill">⛽ Bensin</span><span class="spec-pill">🤖 CVT</span><span class="spec-pill">❄️ AC</span></div><div style="margin-bottom:10px"><span class="chip av">Tersedia</span></div><div class="car-foot"><div><div class="car-price-lbl">Mulai dari</div><div class="car-price">Rp 400rb <span>/ hari</span></div></div><button class="btn-pick">Pilih</button></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ BOOKING ══════ -->
+<div class="page" id="page-booking">
+  <div class="bk-layout">
+    <div>
+      <div class="back-btn" onclick="go('page-catalog')">← Kembali ke Katalog</div>
+      <div class="car-detail-hero">
+        <div class="cdh-img">🚗<div style="position:absolute;top:14px;left:14px"><span class="ctag pop">⭐ Terpopuler</span></div><div style="position:absolute;top:14px;right:14px"><span class="chip av">✅ Tersedia</span></div></div>
+        <div class="cdh-body">
+          <div class="cdh-title">Toyota Avanza 1.3 G · 2022</div>
+          <div class="cdh-sub">Economy Car · 5 Penumpang · Jakarta Pusat · Plat B 1234 KA</div>
+          <div class="spec-grid">
+            <div class="spec-item"><div class="si-icon">👥</div><div class="si-val">5 Orang</div><div class="si-key">Kapasitas</div></div>
+            <div class="spec-item"><div class="si-icon">⛽</div><div class="si-val">Bensin</div><div class="si-key">Bahan Bakar</div></div>
+            <div class="spec-item"><div class="si-icon">🔧</div><div class="si-val">Manual</div><div class="si-key">Transmisi</div></div>
+            <div class="spec-item"><div class="si-icon">❄️</div><div class="si-val">Full AC</div><div class="si-key">Kenyamanan</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-box">
+        <div class="sb-title">📅 Pilih Tanggal Sewa</div>
+        <div class="field-grid">
+          <div class="fg"><label class="flabel">Tanggal Mulai</label><input class="finput" type="date" value="2025-03-18"></div>
+          <div class="fg"><label class="flabel">Tanggal Selesai</label><input class="finput" type="date" value="2025-03-21"></div>
+          <div class="fg"><label class="flabel">Jam Pengambilan</label><select class="finput"><option>08:00 WIB</option><option>10:00 WIB</option><option selected>12:00 WIB</option><option>14:00 WIB</option></select></div>
+          <div class="fg"><label class="flabel">Tipe Sewa</label><select class="finput"><option selected>Lepas Kunci</option><option>Dengan Pengemudi (+Rp 150rb/hari)</option></select></div>
+        </div>
+      </div>
+
+      <div class="sec-box">
+        <div class="sb-title">✨ Layanan Tambahan (Opsional)</div>
+        <div class="addon-list">
+          <div class="addon-item sel" onclick="this.classList.toggle('sel');this.querySelector('.ai-check').textContent=this.classList.contains('sel')?'✓':''">
+            <div class="ai-left"><div class="ai-icon">🛡️</div><div><div class="ai-name">Asuransi Komprehensif</div><div class="ai-desc">Perlindungan penuh selama masa sewa</div></div></div>
+            <div class="ai-price">Rp 50rb/hari</div><div class="ai-check">✓</div>
+          </div>
+          <div class="addon-item" onclick="this.classList.toggle('sel');this.querySelector('.ai-check').textContent=this.classList.contains('sel')?'✓':''">
+            <div class="ai-left"><div class="ai-icon">👶</div><div><div class="ai-name">Baby Car Seat</div><div class="ai-desc">Kursi bayi standar internasional</div></div></div>
+            <div class="ai-price">Rp 30rb/hari</div><div class="ai-check"></div>
+          </div>
+          <div class="addon-item" onclick="this.classList.toggle('sel');this.querySelector('.ai-check').textContent=this.classList.contains('sel')?'✓':''">
+            <div class="ai-left"><div class="ai-icon">📍</div><div><div class="ai-name">GPS Tracker</div><div class="ai-desc">Navigasi gratis selama perjalanan</div></div></div>
+            <div class="ai-price">Rp 25rb/hari</div><div class="ai-check"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-box">
+        <div class="sb-title">👤 Data Penyewa</div>
+        <div class="field-grid">
+          <div class="fg"><label class="flabel">Nama Lengkap</label><input class="finput" type="text" value="Ahmad Fauzi" placeholder="Sesuai KTP"></div>
+          <div class="fg"><label class="flabel">No. WhatsApp</label><input class="finput" type="text" value="082233445566"></div>
+          <div class="fg full"><label class="flabel">No. KTP (NIK)</label><input class="finput" type="text" value="3171XXXXXXXXXXXX"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER BOX SIDEBAR -->
+    <div>
+      <div class="order-box">
+        <div class="ob-car">
+          <div class="ob-img">🚗</div>
+          <div><div class="ob-name">Toyota Avanza 1.3 G</div><div class="ob-plate">B 1234 KA · 2022</div></div>
+        </div>
+        <div style="background:var(--snow);border-radius:10px;padding:12px;margin-bottom:18px;font-size:12px;color:var(--slate);display:flex;gap:8px;align-items:center">
+          📅 <span><strong style="color:var(--ink)">18 Mar – 21 Mar 2025</strong> · 3 hari</span>
+        </div>
+        <div class="price-rows">
+          <div class="pr"><span class="pr-k">Rp 350rb × 3 hari</span><span class="pr-v">Rp 1.050.000</span></div>
+          <div class="pr"><span class="pr-k">Asuransi komprehensif</span><span class="pr-v">Rp 150.000</span></div>
+          <div class="pr"><span class="pr-k" style="color:var(--teal)">Diskon member Gold</span><span class="pr-v" style="color:var(--teal)">-Rp 60.000</span></div>
+          <div class="pr-div"></div>
+          <div class="pr-total"><span class="prt-k">Total</span><span class="prt-v">Rp 1.140.000</span></div>
+        </div>
+        <div class="promo-row">
+          <input class="promo-in" type="text" placeholder="🎟️ Kode promo">
+          <button class="btn-promo">Terapkan</button>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--slate);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px">Metode Pembayaran</div>
+        <div class="pay-options">
+          <label class="pay-opt sel" onclick="selPay(this)"><input type="radio" name="pay" checked style="accent-color:var(--amber)"><span class="pay-opt-name">Transfer Bank</span><span class="pay-opt-sub">BCA/BNI/Mandiri</span></label>
+          <label class="pay-opt" onclick="selPay(this)"><input type="radio" name="pay" style="accent-color:var(--amber)"><span class="pay-opt-name">QRIS</span><span class="pay-opt-sub">⚡ Instan</span></label>
+          <label class="pay-opt" onclick="selPay(this)"><input type="radio" name="pay" style="accent-color:var(--amber)"><span class="pay-opt-name">Kartu Kredit</span><span class="pay-opt-sub">Visa / MC</span></label>
+        </div>
+        <button class="btn-confirm" onclick="doBook()">🚗 Konfirmasi Booking</button>
+        <div class="trust-row"><span class="tb">🔒 Aman</span><span class="tb">⚡ Instan</span><span class="tb">📱 WA Notif</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ DASHBOARD ══════ -->
+<div class="page" id="page-dashboard">
+  <div class="dash-layout">
+    <aside class="dash-side">
+      <div class="ds-user">
+        <div class="ds-av">AF</div>
+        <div class="ds-name">Ahmad Fauzi</div>
+        <div class="ds-email">ahmad@email.com</div>
+        <div class="ds-pts"><span class="dp-v">⭐ 2.450 poin</span><span class="dp-l">· Gold</span></div>
+      </div>
+      <div class="ds-menu">
+        <div class="ds-ml">Menu Utama</div>
+        <div class="dmi active"><span class="dmi-ic">📊</span><span class="dmi-lb">Ringkasan</span></div>
+        <div class="dmi"><span class="dmi-ic">📋</span><span class="dmi-lb">Riwayat Sewa</span></div>
+        <div class="dmi"><span class="dmi-ic">❤️</span><span class="dmi-lb">Favorit Saya</span></div>
+        <div class="dmi"><span class="dmi-ic">⭐</span><span class="dmi-lb">Poin & Reward</span></div>
+        <div class="ds-ml">Akun</div>
+        <div class="dmi"><span class="dmi-ic">👤</span><span class="dmi-lb">Profil Saya</span></div>
+        <div class="dmi"><span class="dmi-ic">🔔</span><span class="dmi-lb">Notifikasi <span style="font-size:10px;background:var(--crimson);color:#fff;padding:1px 6px;border-radius:10px;margin-left:4px">3</span></span></div>
+        <div class="dmi"><span class="dmi-ic">🆘</span><span class="dmi-lb">Bantuan</span></div>
+        <div class="dmi" onclick="go('page-home')"><span class="dmi-ic">←</span><span class="dmi-lb">Kembali ke Beranda</span></div>
+      </div>
+    </aside>
+    <div class="dash-main">
+      <div class="dw-card">
+        <div style="position:relative;z-index:1">
+          <div class="dw-greet">Selamat datang kembali,</div>
+          <div class="dw-name">Ahmad Fauzi 👋</div>
+          <div class="dw-tier">🥇 Gold Member · Bergabung Januari 2024</div>
+          <div class="dw-stats">
+            <div><div class="dws-v">28</div><div class="dws-l">Total Sewa</div></div>
+            <div class="dws-div"></div>
+            <div><div class="dws-v">Rp 24.5Jt</div><div class="dws-l">Total Transaksi</div></div>
+            <div class="dws-div"></div>
+            <div><div class="dws-v">2.450</div><div class="dws-l">Poin Loyalty</div></div>
+          </div>
+        </div>
+        <div style="position:relative;z-index:1">
+          <button class="btn btn-amber btn-lg" onclick="go('page-catalog')">+ Sewa Sekarang</button>
+        </div>
+      </div>
+
+      <div class="dash-grid2">
+        <div class="dc">
+          <div class="dc-title">🚗 Booking Aktif & Mendatang <a>Lihat Semua</a></div>
+          <div class="bsc"><div class="bsc-car">🏎️</div><div><div class="bsc-name">Toyota Fortuner VRZ</div><div class="bsc-dates">📅 12–17 Maret 2025 · 5 hari</div></div><div class="bsc-right"><span class="bsc-status bss-active">● Aktif</span><div class="bsc-price">Rp 4.75Jt</div></div></div>
+          <div class="bsc"><div class="bsc-car">🚗</div><div><div class="bsc-name">Toyota Avanza 1.3 G</div><div class="bsc-dates">📅 18–21 Maret 2025 · 3 hari</div></div><div class="bsc-right"><span class="bsc-status bss-up">◉ Mendatang</span><div class="bsc-price">Rp 1.14Jt</div></div></div>
+        </div>
+        <div class="dc">
+          <div class="dc-title">⭐ Poin & Loyalty <a>Detail</a></div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+            <div style="font-family:'Syne',sans-serif;font-size:44px;font-weight:800;color:var(--amber);line-height:1">2.450</div>
+            <div>
+              <div style="font-size:14px;font-weight:700">Poin Tersedia</div>
+              <div style="font-size:12px;color:var(--slate);margin-top:3px">≈ Rp 245.000 diskon</div>
+              <div style="font-size:11px;color:var(--teal);margin-top:4px;font-weight:700">🥇 Gold Member</div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--slate);margin-bottom:6px"><span>Gold (2.000)</span><span>Platinum (5.000)</span></div>
+            <div class="pts-bar"><div class="pts-fill" style="width:49%"></div></div>
+            <div style="font-size:12px;color:var(--slate);margin-bottom:12px">Butuh 2.550 poin lagi untuk Platinum 🚀</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;padding:8px;background:var(--teal-pale);border-radius:8px"><span style="color:var(--teal);font-weight:600">✅ Sewa selesai #BK-0393</span><span style="color:var(--teal);font-weight:700">+475 poin</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:12px;padding:8px;background:var(--snow);border-radius:8px"><span style="color:var(--slate)">Tukar diskon Rp 50rb</span><span style="color:var(--crimson);font-weight:700">-500 poin</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dc" style="margin-bottom:20px">
+        <div class="dc-title">🎁 Promo Eksklusif untuk Anda</div>
+        <div class="promo-grid">
+          <div class="promo-card"><div class="promo-bg" style="background:linear-gradient(135deg,#1A3A6B,#0D2550)"><div class="p-tag">Gold Member</div><div class="p-title">Diskon 15%<br>Semua Kendaraan</div><div class="p-code">Kode: GOLD15</div></div></div>
+          <div class="promo-card"><div class="promo-bg" style="background:linear-gradient(135deg,#6B2A00,#A84000)"><div class="p-tag">Spesial Ultah</div><div class="p-title">Voucher Gratis<br>Rp 200.000</div><div class="p-code">Berlaku: 14–21 Mar</div></div></div>
+          <div class="promo-card"><div class="promo-bg" style="background:linear-gradient(135deg,#0A4A3E,#067060)"><div class="p-tag">Repeat Order</div><div class="p-title">2x Poin untuk<br>Sewa Berikutnya</div><div class="p-code">Otomatis berlaku</div></div></div>
+        </div>
+      </div>
+
+      <div class="dc">
+        <div class="dc-title">📋 Riwayat Sewa Terakhir <a>Lihat Semua</a></div>
+        <table style="width:100%;border-collapse:collapse">
+          <thead><tr style="border-bottom:1px solid var(--cloud)"><th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:700;color:var(--mist);text-transform:uppercase;letter-spacing:1px">No. Booking</th><th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:700;color:var(--mist);text-transform:uppercase;letter-spacing:1px">Kendaraan</th><th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:700;color:var(--mist);text-transform:uppercase;letter-spacing:1px">Periode</th><th style="text-align:right;padding:8px 12px;font-size:10px;font-weight:700;color:var(--mist);text-transform:uppercase;letter-spacing:1px">Total</th><th style="text-align:right;padding:8px 12px;font-size:10px;font-weight:700;color:var(--mist);text-transform:uppercase;letter-spacing:1px">Poin</th></tr></thead>
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(228,231,239,.5)"><td style="padding:12px;font-size:12px;font-weight:700;color:var(--amber)">#BK-0393</td><td style="padding:12px;font-size:13px">🏎️ Fortuner VRZ</td><td style="padding:12px;font-size:12px;color:var(--slate)">12–17 Mar 2025</td><td style="padding:12px;text-align:right;font-size:13px;font-weight:700">Rp 4.75Jt</td><td style="padding:12px;text-align:right;font-size:12px;font-weight:700;color:var(--teal)">+475</td></tr>
+            <tr style="border-bottom:1px solid rgba(228,231,239,.5)"><td style="padding:12px;font-size:12px;font-weight:700;color:var(--slate)">#BK-0380</td><td style="padding:12px;font-size:13px">🚙 Honda CR-V</td><td style="padding:12px;font-size:12px;color:var(--slate)">1–3 Mar 2025</td><td style="padding:12px;text-align:right;font-size:13px;font-weight:700">Rp 1.95Jt</td><td style="padding:12px;text-align:right;font-size:12px;font-weight:700;color:var(--teal)">+195</td></tr>
+            <tr><td style="padding:12px;font-size:12px;font-weight:700;color:var(--slate)">#BK-0365</td><td style="padding:12px;font-size:13px">🚗 Avanza 1.3 G</td><td style="padding:12px;font-size:12px;color:var(--slate)">14–16 Feb 2025</td><td style="padding:12px;text-align:right;font-size:13px;font-weight:700">Rp 1.05Jt</td><td style="padding:12px;text-align:right;font-size:12px;font-weight:700;color:var(--teal)">+105</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  window.scrollTo(0, 0);
+}
+function doBook() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => { t.classList.remove('show'); go('page-dashboard'); }, 2800);
+}
+function selPay(el) {
+  document.querySelectorAll('.pay-opt').forEach(e => e.classList.remove('sel'));
+  el.classList.add('sel');
+}
+document.querySelectorAll('.filter-tabs').forEach(wrap => {
+  wrap.querySelectorAll('.ftab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      wrap.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+document.querySelectorAll('.dmi').forEach(item => {
+  item.addEventListener('click', function() {
+    if (!this.getAttribute('onclick')) {
+      document.querySelectorAll('.dmi').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+    }
+  });
+});
+</script>
+</body>
+</html>
